@@ -89,6 +89,18 @@ async function run() {
       res.send(result);
     });
 
+    app.put('/api/v1/foods/:id', async (req, res) => {
+      const id = req.params.id;
+      const updateData = req.body;
+      const query = { _id: new ObjectId(id) };
+
+      const result = await foodCollection.updateOne(query, {
+        $set: updateData,
+      });
+      res.send(result);
+      console.log(id);
+    });
+
     app.delete('/api/v1/foods/:id', async (req, res) => {
       const id = req.params.id;
       const result = await foodCollection.deleteOne({ _id: new ObjectId(id) });
