@@ -36,6 +36,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const foodCollection = client.db('kolaDB').collection('foods');
+    const requestCollection = client.db('kolaDB').collection('request');
 
     app.get('/api/v1/foods', async (req, res) => {
       const { quantity, sortField, sortOrder, foodName } = req.query;
@@ -81,6 +82,13 @@ async function run() {
       const id = req.params.id;
       let query = { _id: new ObjectId(id) };
       const result = await foodCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.post('/api/v1/user/request', async (req, res) => {
+      const requestData = req.body;
+      const result = await requestCollection.insertOne(requestData);
+      console.log(result);
       res.send(result);
     });
 
