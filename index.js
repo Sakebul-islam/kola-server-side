@@ -37,22 +37,18 @@ async function run() {
     await client.connect();
     const foodCollection = client.db('kolaDB').collection('foods');
 
-    // foods API
     app.get('/api/v1/foods', async (req, res) => {
       const { quantity, sortField, sortOrder, foodName } = req.query;
 
-      // Parse quantity as a number; if not provided, set it to null
       const quantityLimit = quantity ? parseInt(quantity, 10) : null;
 
       let queryObj = {};
       let sortObj = {};
 
-      // Add a query for foodName if provided
       if (foodName) {
         queryObj.foodName = { $regex: new RegExp(foodName, 'i') };
       }
 
-      // pagination
       const page = Number(req.query.page);
       const limit = Number(req.query.limit);
       const skip = (page - 1) * limit;
@@ -60,6 +56,8 @@ async function run() {
       // sorting
       if (sortField && sortField === 'expiredDateTime' && sortOrder) {
         sortObj[sortField] = sortOrder === 'desc' ? -1 : 1;
+      } else {
+        sortObj.foodQuantity = -1;
       }
 
       const cursor = foodCollection
@@ -72,11 +70,9 @@ async function run() {
       const result = await cursor.toArray();
 
       if (quantityLimit !== null) {
-        // If a quantity limit is specified, return only the requested number of items
         const limitedResult = result.slice(0, quantityLimit);
         res.send(limitedResult);
       } else {
-        // If no quantity limit is specified, return all items
         res.send(result);
       }
     });
