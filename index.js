@@ -85,6 +85,13 @@ async function run() {
       res.send(result);
     });
 
+    app.post('/api/v1/foods', async (req, res) => {
+      const foodData = req.body;
+
+      const result = await foodCollection.insertOne(foodData);
+      res.send(result);
+    });
+
     app.post('/api/v1/user/request', async (req, res) => {
       const requestData = req.body;
       const result = await requestCollection.insertOne(requestData);
