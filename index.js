@@ -129,7 +129,6 @@ async function run() {
 
         const result = await requestCollection.find(queryObj).toArray();
 
-        console.log(queryObj);
         res.send(result);
       } catch (error) {
         console.error(error);
@@ -140,8 +139,38 @@ async function run() {
     app.post('/api/v1/user/request', async (req, res) => {
       const requestData = req.body;
       const result = await requestCollection.insertOne(requestData);
-      console.log(result);
       res.send(result);
+    });
+
+    app.patch('/api/v1/user/request/:id', async (req, res) => {
+      console.log(req.params.id);
+      try {
+        const requestId = req.params.id;
+        const { foodStatus } = req.body;
+        // Check if foodStatus is provided in the request
+        if (!foodStatus) {
+          return res
+            .status(400)
+            .json({ error: 'foodStatus is required in the request body' });
+        }
+
+        // Update the document with the new foodStatus
+        const result = await requestCollection.updateOne(
+          { _id: new ObjectId(requestId) },
+          { $set: { foodStatus: foodStatus } }
+        );
+
+        console.log(result);
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).json({ error: 'Request not found' });
+        }
+
+        res.json({ message: 'Request updated successfully' });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+      }
     });
 
     // Send a ping to confirm a successful connection
