@@ -114,6 +114,29 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/api/v1/user/request', async (req, res) => {
+      try {
+        const { userEmail, foodId } = req.query;
+        let queryObj = {};
+
+        if (userEmail) {
+          queryObj.requestPersonEmail = userEmail;
+        }
+
+        if (foodId) {
+          queryObj.foodId = foodId;
+        }
+
+        const result = await requestCollection.find(queryObj).toArray();
+
+        console.log(queryObj);
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+      }
+    });
+
     app.post('/api/v1/user/request', async (req, res) => {
       const requestData = req.body;
       const result = await requestCollection.insertOne(requestData);
