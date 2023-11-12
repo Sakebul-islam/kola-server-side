@@ -172,6 +172,27 @@ async function run() {
         res.status(500).send('Internal Server Error');
       }
     });
+    app.delete('/api/v1/user/request/:id', async (req, res) => {
+      try {
+        const requestId = req.params.id;
+
+        // Delete the document with the given ID
+        const result = await requestCollection.deleteOne({
+          _id: new ObjectId(requestId),
+        });
+
+        console.log(result);
+
+        if (result.deletedCount === 0) {
+          return res.status(404).json({ error: 'Request not found' });
+        }
+
+        res.json({ message: 'Request deleted successfully' });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+      }
+    });
 
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 });
