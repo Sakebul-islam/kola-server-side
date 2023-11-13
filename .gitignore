@@ -1,3 +1,4 @@
 node_modules
 .env
 foods.json
+vercel.json
